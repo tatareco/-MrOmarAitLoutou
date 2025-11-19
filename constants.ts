@@ -1,7 +1,7 @@
 import { AppState, ChatChannel, Resource, Skill, Specialization, Team, TestContext, TextContent, User } from './types';
 
-export const DEFAULT_ADMIN_EMAIL = "ouarab.oussama@gmail.com";
-export const DEFAULT_ADMIN_PASSWORD = "12345678";
+export const DEFAULT_ADMIN_EMAIL = "aitloutouaom@gmail.com";
+export const DEFAULT_ADMIN_PASSWORD = "password123";
 
 export const TRANSLATIONS = {
   ar: {

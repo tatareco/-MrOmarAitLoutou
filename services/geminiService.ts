@@ -1,7 +1,17 @@
+
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to get the client lazily.
+// This prevents the app from crashing immediately on load if process.env is undefined in some environments.
+const getAiClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.error("API_KEY is missing in environment variables.");
+    // We return a dummy client or throw, but this way the app shell still loads.
+    throw new Error("API Key is missing. Please check your settings.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 const quizSchema: Schema = {
   type: Type.ARRAY,
@@ -32,6 +42,7 @@ const scenarioSchema: Schema = {
  */
 export const generateQuiz = async (text: string) => {
   try {
+    const ai = getAiClient();
     const prompt = `Based on the following text, generate 5 multiple-choice questions in Arabic (or French if the text is French) to test comprehension. 
     The text is: """${text}"""`;
 
@@ -58,6 +69,7 @@ export const generateQuiz = async (text: string) => {
  */
 export const evaluateAnswer = async (referenceText: string, question: string, userAnswer: string) => {
   try {
+    const ai = getAiClient();
     const prompt = `You are an educational assistant. Evaluate the following student answer based on the reference text and question provided. 
     Provide constructive feedback in the same language as the answer. Be concise but helpful.
     
@@ -87,6 +99,7 @@ export const evaluateAnswer = async (referenceText: string, question: string, us
  */
 export const generateSkillScenario = async (skillName: string, description: string, specialization: string) => {
   try {
+    const ai = getAiClient();
     const prompt = `Create a realistic, short professional scenario for the skill: '${skillName}' (${description}), related to the specialization: '${specialization}'.
     Then ask an open-ended question on how to handle it. Output in JSON. Use Arabic.`;
 
@@ -112,6 +125,7 @@ export const generateSkillScenario = async (skillName: string, description: stri
  */
 export const evaluateSkillResponse = async (skillName: string, scenario: string, userAnswer: string) => {
   try {
+    const ai = getAiClient();
     const prompt = `You are a professional coach. A trainee responded to a scenario about '${skillName}'.
     Scenario: "${scenario}"
     Response: "${userAnswer}"
@@ -143,6 +157,7 @@ export const sendChatMessage = async (
   systemInstruction?: string
 ) => {
   try {
+    const ai = getAiClient();
     // If model is gemini-3-pro-preview, we apply thinking config automatically for complex queries
     const isThinkingModel = model === "gemini-3-pro-preview";
     
